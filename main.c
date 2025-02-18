@@ -36,6 +36,8 @@ void enableRawMode() {
     if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) die("tcsetattr");
 }
 
+// Terminal
+
 char editorReadKey (){
     int nread;
     char c;
@@ -57,6 +59,7 @@ void editorProcessKey(){
 
 void editorRefreshScreen(){
     write(STDOUT_FILENO, "\x1b[2J", 4);
+    write(STDOUT_FILENO, "\x1b[h]", 3);
 }
 
 int main() {
