@@ -8,7 +8,11 @@
 /*** defines ***/
 #define CTRL_KEY(k) ((k) & 0x1f)
 
-struct termios org_termios;
+struct editorConfig {
+    struct termios org_termios;
+};
+
+struct editorConfig E;
 
 void editorDrawRows(){
     int y;
@@ -25,15 +29,15 @@ void die(const char *s) {
 }
 
 void disableRawMode() {
-    if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &org_termios) == -1){
+    if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.org_termios) == -1){
         die("tcsetattr");
     }
 }
 
 void enableRawMode() {
-    if(tcgetattr(STDIN_FILENO, &org_termios) == -1) die("tcgetattr") ;
+    if(tcgetattr(STDIN_FILENO, &E.org_termios) == -1) die("tcgetattr") ;
     atexit(disableRawMode);
-    struct termios raw = org_termios;
+    struct termios raw = E.org_termios;
 
     tcgetattr(STDIN_FILENO, &raw);
     raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
