@@ -10,8 +10,15 @@
 
 struct termios org_termios;
 
+void editorDrawRows(){
+    int y;
+    for(y = 0; y < 24; y++){
+        write(STDOUT_FILENO, "~\r\n", 3);
+    }
+}
+
 void die(const char *s) {
-    write(STDOUT_FILENO, "\x1b[2J]", 4);
+    write(STDOUT_FILENO, "\x1b[2J", 4);
     write(STDOUT_FILENO, "\x1b[H", 3);
     perror(s);
     exit(1);
@@ -54,6 +61,8 @@ void editorProcessKey(){
     char c = editorReadKey();
     switch (c){
         case CTRL_KEY('q'):
+        write(STDOUT_FILENO, "\x1b[2J", 4);
+        write(STDOUT_FILENO, "\x1b[H", 3);
         exit(0);
         break;
     }
@@ -62,6 +71,8 @@ void editorProcessKey(){
 void editorRefreshScreen(){
     write(STDOUT_FILENO, "\x1b[2J", 4);
     write(STDOUT_FILENO, "\x1b[H", 3);
+    editorDrawRows();
+    write(STDOUT_FILENO, "\x1b[H", 3);
 }
 
 int main() {
@@ -69,8 +80,6 @@ int main() {
     while (1) {
         editorRefreshScreen();
         editorProcessKey();
-        write(STDOUT_FILENO, "\x1b[2J]", 4);
-        write(STDOUT_FILENO, "\x1b[H", 3);
         // char c = '\0';
         // if(read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN) die("read");
         // if (iscntrl(c)) {
