@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h> 
+#include <sys/ioctl.h>
 
 /*** defines ***/
 #define CTRL_KEY(k) ((k) & 0x1f)
@@ -60,6 +61,19 @@ char editorReadKey (){
     }
     return c;
 }
+
+int getWindowSize(int *rows, int *cols){
+    struct winsize ws;
+
+    if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0){
+        return -1;
+    }
+    else{
+        *rows = ws.ws_row;
+        *cols = ws.ws_col;
+        return 0;
+    }
+};
 
 void editorProcessKey(){
     char c = editorReadKey();
